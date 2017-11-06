@@ -5,7 +5,7 @@ use std::fmt;
 use byteorder::{ ReadBytesExt, LittleEndian };
 
 use parse_error::ParseError;
-use utility::{ read_record_header, read_subrecord_header, read_data };
+use utility::{ read_subrecord_header, read_data };
 
 pub enum FileType {
     ESP,
@@ -22,7 +22,7 @@ pub struct TES3Header {
 }
 
 impl FileType {
-    
+
     pub fn from_num(num: i32) -> Result<FileType, ParseError> {
         match num {
             0 => Ok(FileType::ESP),
@@ -43,12 +43,11 @@ impl FileType {
 
 impl TES3Header {
 
-
-    pub fn new<R: Read + Seek>(reader: &mut R) -> Result<TES3Header, ParseError> {
+    pub fn new(reader: &mut R) -> Result<TES3Header, ParseError> {
         let (sub_name, sub_size) = read_subrecord_header(reader)?;
 
         if sub_name != "HEDR" {
-           return Err(ParseError::InvalidRecordName("HEDR".to_owned(), sub_name.to_owned())); 
+           return Err(ParseError::InvalidRecordName("HEDR".to_owned(), sub_name.to_owned()));
         }
         if sub_size != 300 {
             warn!("subrecord {} has expected size {}, but was {}",
@@ -67,7 +66,7 @@ impl TES3Header {
         let company_name = str::from_utf8(&buf[pos..pos + 32])?;
         pos += 32;
         let file_description = str::from_utf8(&buf[pos..pos + 256])?;   //TODO check how to handle äöü
-        
+
         pos += 256;
         let num_records = (&buf[pos..pos + 4]).read_i32::<LittleEndian>()?;
 
