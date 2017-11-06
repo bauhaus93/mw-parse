@@ -1,0 +1,10 @@
+[package]
+name = "esm_parser"
+version = "0.1.0"
+authors = ["Jakob Fischer <JakobFischer93@gmail.com>"]
+
+[dependencies]
+
+log = "0.3"
+rusqlite = "0.12"
+byteorder = "1.1"

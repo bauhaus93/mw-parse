@@ -1,0 +1,11 @@
+[package]
+name = "morrowind"
+version = "0.1.0"
+authors = ["Jakob Fischer <JakobFischer93@gmail.com>"]
+
+[dependencies]
+
+esm_parser = { path = "esm-parser/" }
+logger = { path = "logger/" }
+
+log = "0.3"
