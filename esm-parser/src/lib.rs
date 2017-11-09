@@ -39,7 +39,7 @@ pub fn parse_game_data(path_esm: &str) -> Result<GameData, ParseError> {
 
     let mut cells: Vec<CellData> = Vec::new();
 
-    for _ in 0..tes3_header.get_num_records().0 {
+    for _ in 0..tes3_header.get_num_records() {
         let record = match Record::parse(&mut reader) {
             Ok(r) => r,
             Err(e) => {

@@ -8,17 +8,17 @@ use basic_type::{ Long32, Float32, Text };
 use record::subrecord_header::SubrecordHeader;
 
 pub struct TES3Header {
-    version: Float32,
-    file_type: Long32,
-    company_name: Text,
-    description: Text,
-    num_records: Long32
+    version: f32,
+    file_type: u32,
+    company_name: String,
+    description: String,
+    num_records: u32
 }
 
 impl TES3Header {
 
-    pub fn get_num_records(&self) -> &Long32 {
-        &self.num_records
+    pub fn get_num_records(&self) -> u32 {
+        self.num_records
     }
 }
 
@@ -31,11 +31,11 @@ impl Parseable<TES3Header> for TES3Header {
         }
 
         Ok(TES3Header {
-            version: Float32::parse(reader)?,
-            file_type: Long32::parse(reader)?,
-            company_name: Text::parse(reader, 32)?,
-            description: Text::parse(reader, 256)?,
-            num_records: Long32::parse(reader)?,
+            version: Float32::parse(reader)?.0,
+            file_type: Long32::parse(reader)?.0 as u32,
+            company_name: Text::parse(reader, 32)?.0,
+            description: Text::parse(reader, 256)?.0,
+            num_records: Long32::parse(reader)?.0 as u32,
         })
     }
 }
@@ -43,10 +43,10 @@ impl Parseable<TES3Header> for TES3Header {
 impl fmt::Display for TES3Header {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "tes3 header: version = {}, file_type = {}, company name = \"{}\", description = \"{}\", num records: {}",
-               self.version.0,
-               self.file_type.0,
-               self.company_name.0,
-               self.description.0,
-               self.num_records.0)
+               self.version,
+               self.file_type,
+               self.company_name,
+               self.description,
+               self.num_records)
     }
 }
