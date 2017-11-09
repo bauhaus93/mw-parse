@@ -17,7 +17,7 @@ pub fn init() -> Result<(), SetLoggerError> {
     };
 
     let mut builder = LogBuilder::new();
-    builder.format(format).filter(None, LogLevelFilter::Trace);
+    builder.format(format).filter(None, LogLevelFilter::Info);
 
     if env::var("RUST_LOG").is_ok() {
         builder.parse(&env::var("RUST_LOG").unwrap());   //TODO catch properly

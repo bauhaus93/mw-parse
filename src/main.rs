@@ -25,5 +25,5 @@ pub fn main() {
     };
 
     info!("{}", game_data);
-    
+
 }
