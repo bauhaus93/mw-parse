@@ -6,20 +6,20 @@ use parse_error::ParseError;
 use basic_type::{ Long32, Text };
 
 pub struct RecordHeader {
-    name: Text,
-    size: Long32,
-    unknown: Long32,
-    flags: Long32
+    name: String,
+    size: u32,
+    unknown: u32,
+    flags: u32
 }
 
 impl RecordHeader {
 
-    pub fn get_name(&self) -> &Text {
+    pub fn get_name(&self) -> &str {
         &self.name
     }
 
-    pub fn get_size(&self) -> &Long32 {
-        &self.size
+    pub fn get_size(&self) -> u32 {
+        self.size
     }
 }
 
@@ -32,10 +32,10 @@ impl Parseable<RecordHeader> for RecordHeader {
         let flags = Long32::parse(reader)?;
         trace!("record header: name = {}, size = {}", name.0, size.0);
         let header = RecordHeader {
-            name: name,
-            size: size,
-            unknown: unknown,
-            flags: flags
+            name: name.0,
+            size: size.0 as u32,
+            unknown: unknown.0 as u32,
+            flags: flags.0 as u32
         };
         Ok(header)
     }

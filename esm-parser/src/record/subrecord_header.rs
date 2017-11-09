@@ -6,18 +6,18 @@ use parse_error::ParseError;
 use basic_type::{ Long32, Text };
 
 pub struct SubrecordHeader {
-    name: Text,
-    size: Long32,
+    name: String,
+    size: u32,
 }
 
 impl SubrecordHeader {
 
-    pub fn get_name(&self) -> &Text {
+    pub fn get_name(&self) -> &str {
         &self.name
     }
 
-    pub fn get_size(&self) -> &Long32 {
-        &self.size
+    pub fn get_size(&self) -> u32 {
+        self.size
     }
 }
 
@@ -28,8 +28,8 @@ impl Parseable<SubrecordHeader> for SubrecordHeader {
         let size = Long32::parse(reader)?;
         trace!("subrecord header: name = {}, size = {}", name.0, size.0);
         let header = SubrecordHeader {
-            name: name,
-            size: size,
+            name: name.0,
+            size: size.0 as u32,
         };
         Ok(header)
     }

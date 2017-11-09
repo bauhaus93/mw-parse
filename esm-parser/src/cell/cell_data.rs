@@ -18,9 +18,9 @@ pub struct CellData {
 
 fn get_exterior_fields<R: Read + Seek>(reader: &mut R) -> Result<(String), ParseError> {
     let sub_header = SubrecordHeader::parse(reader)?;
-    let region_name = match sub_header.get_name().0 {
-        ref name if name == "RGNN" => Text::parse(reader, sub_header.get_size().0 as usize)?,
-        ref unexpected_name => return Err(ParseError::InvalidSubrecordName("RGNN".to_owned(), unexpected_name.to_owned()))
+    let region_name = match sub_header.get_name() {
+        ref name if *name == "RGNN" => Text::parse(reader, sub_header.get_size() as usize)?,
+        ref unexpected_name => return Err(ParseError::InvalidSubrecordName("RGNN".to_owned(), unexpected_name.to_string()))
     };
     Ok((region_name.0))
 }
@@ -29,18 +29,18 @@ impl Parseable<CellData> for CellData {
     fn parse<R: Read + Seek>(reader: &mut R) -> Result<CellData, ParseError> {
 
         let sub_header = SubrecordHeader::parse(reader)?;
-        let name = match sub_header.get_name().0 {
-            ref name if name == "NAME" => Text::parse(reader, sub_header.get_size().0 as usize)?,
-            ref unexpected_name => return Err(ParseError::InvalidSubrecordName("NAME".to_owned(),unexpected_name.to_owned()))
+        let name = match sub_header.get_name() {
+            ref name if *name == "NAME" => Text::parse(reader, sub_header.get_size() as usize)?,
+            ref unexpected_name => return Err(ParseError::InvalidSubrecordName("NAME".to_owned(), unexpected_name.to_string()))
         };
 
         let sub_header = SubrecordHeader::parse(reader)?;
-        let (flags, grid_x, grid_y) = match sub_header.get_name().0 {
-            ref name if name == "DATA" => {
-                assert!(sub_header.get_size().0 == 12);
+        let (flags, grid_x, grid_y) = match sub_header.get_name() {
+            ref name if *name == "DATA" => {
+                assert!(sub_header.get_size() == 12);
                 (Long32::parse(reader)?, Long32::parse(reader)?, Long32::parse(reader)?)
             }
-            ref unexpected_name => return Err(ParseError::InvalidSubrecordName("DATA".to_owned(),unexpected_name.to_owned()))
+            ref unexpected_name => return Err(ParseError::InvalidSubrecordName("DATA".to_owned(), unexpected_name.to_string()))
         };
 
         let region_name = match flags.0 & 1 {

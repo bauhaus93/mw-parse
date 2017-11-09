@@ -26,8 +26,8 @@ impl Parseable<TES3Header> for TES3Header {
 
     fn parse<R: Read + Seek>(reader: &mut R)  -> Result<TES3Header, ParseError> {
         let sub_header = SubrecordHeader::parse(reader)?;
-        if sub_header.get_name().0 != "HEDR" {
-            return Err(ParseError::InvalidSubrecordName("HEDR".to_owned(), sub_header.get_name().0.to_owned()));
+        if sub_header.get_name() != "HEDR" {
+            return Err(ParseError::InvalidSubrecordName("HEDR".to_owned(), sub_header.get_name().to_string()));
         }
 
         Ok(TES3Header {

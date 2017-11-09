@@ -28,19 +28,19 @@ impl Parseable<Record> for Record {
     fn parse<R: Read + Seek>(reader: &mut R) -> Result<Record, ParseError> {
         let header = RecordHeader::parse(reader)?;
 
-        let record = match header.get_name().0.as_ref() {
+        let record = match header.get_name().as_ref() {
             "TES3" => {
-                let data = read_data(reader, header.get_size().0 as usize)?;
+                let data = read_data(reader, header.get_size() as usize)?;
                 let mut cursor = Cursor::new(data);
                 Record::TES3Header(TES3Header::parse(&mut cursor)?)
             },
             "CELL" => {
-                let data = read_data(reader, header.get_size().0 as usize)?;
+                let data = read_data(reader, header.get_size() as usize)?;
                 let mut cursor = Cursor::new(data);
                 Record::Cell(CellData::parse(&mut cursor)?)
             },
             _unhandled => {
-                reader.seek(SeekFrom::Current(header.get_size().0 as i64))?;
+                reader.seek(SeekFrom::Current(header.get_size() as i64))?;
                 Record::Unhandled
             }
         };
