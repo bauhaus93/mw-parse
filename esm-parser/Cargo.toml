@@ -6,5 +6,4 @@ authors = ["Jakob Fischer <JakobFischer93@gmail.com>"]
 [dependencies]
 
 log = "0.3"
-rusqlite = "0.12"
 byteorder = "1.1"

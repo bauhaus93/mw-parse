@@ -7,6 +7,7 @@ use parse::Parseable;
 use point::Point2D;
 use subrecord::Subrecord;
 use subrecord::triple::Triple;
+use subrecord::ambient_data::AmbientData;
 
 //TODO distinct classes/enum for interior and exterior cells
 pub struct Cell {
@@ -23,8 +24,23 @@ impl Parseable for Cell {
         let Triple(flags, grid_x, grid_y) = Triple::<i32>::parse_subrecord(reader, "DATA")?;
 
         let region_name = match flags & 1 {
-            0 => Some(String::parse_subrecord(reader, "RGNN")?),
+            0 => String::parse_optional_subrecord(reader, "RGNN")?,
             _ => None
+        };
+
+        let nam0 = i32::parse_optional_subrecord(reader, "NAM0")?;
+
+        let nam5 = match flags & 1 {
+            0 => i32::parse_optional_subrecord(reader, "NAM5")?,
+            _ => None
+        };
+
+        let (water_level, ambient_data) = match flags & 1 {
+            1 => {
+                (Some(i32::parse_subrecord(reader, "WHGT")?),
+                 Some(AmbientData::parse_subrecord(reader, "AMBI")?))
+            }
+            _ => (None, None)
         };
 
         let cell_data = Cell {

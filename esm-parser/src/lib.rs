@@ -43,7 +43,7 @@ pub fn parse_game_data(path_esm: &str) -> Result<GameData, ParseError> {
         let record = match Record::parse(&mut reader) {
             Ok(r) => r,
             Err(e) => {
-                info!("{}", e);
+                error!("{}", e);
                 continue;
             }
         };
@@ -52,17 +52,17 @@ pub fn parse_game_data(path_esm: &str) -> Result<GameData, ParseError> {
             Record::Cell(cell_data) => {
                 if cells.len() % 500 == 0 {
                     cells.reserve(500);
+                    info!("cells: {}", cells.len());
                 }
-                info!("cells: {}", cells.len());
                 cells.push(cell_data);
             },
             _ => {}
         }
     }
 
-    for cd in &cells {
+    /*for cd in &cells {
         info!("{}", cd);
-    }
+    }*/
 
     let game_data = GameData {
         tes3_header: tes3_header,
