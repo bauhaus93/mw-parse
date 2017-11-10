@@ -11,7 +11,8 @@ pub enum ParseError {
     Utf8(str::Utf8Error),
     UnknownFileType(i32),
     InvalidRecordName(String, String),
-    InvalidSubrecordName(String, String)
+    InvalidSubrecordName(String, String),
+    InvalidSubrecordSize(String, u32, u32)
 }
 
 impl From<io::Error> for ParseError {
@@ -34,7 +35,8 @@ impl Error for ParseError {
             ParseError::Utf8(_) => "utf8 error",
             ParseError::UnknownFileType(_) => "unknown file type",
             ParseError::InvalidRecordName(_, _) => "invalid record name",
-            ParseError::InvalidSubrecordName(_, _) => "invalid subrecord name"
+            ParseError::InvalidSubrecordName(_, _) => "invalid subrecord name",
+            ParseError::InvalidSubrecordSize(_, _, _) => "invalid subrecord size"
         }
     }
 
@@ -44,7 +46,8 @@ impl Error for ParseError {
             ParseError::Utf8(ref err) => Some(err),
             ParseError::UnknownFileType(_) => None,
             ParseError::InvalidRecordName(_, _) => None,
-            ParseError::InvalidSubrecordName(_, _) => None
+            ParseError::InvalidSubrecordName(_, _) => None,
+            ParseError::InvalidSubrecordSize(_, _, _) => None
         }
     }
 }
@@ -55,8 +58,9 @@ impl fmt::Display for ParseError {
             ParseError::Io(ref err) => write!(f, "{}: {}", self.description(), err),
             ParseError::Utf8(ref err) => write!(f, "{}: {}", self.description(), err),
             ParseError::UnknownFileType(num) => write!(f, "{}: {} indicatess no known file type", self.description(), num),
-            ParseError::InvalidRecordName(ref expected, ref found) => write!(f, "{}: expected {}, found {}", self.description(), expected, found),
-            ParseError::InvalidSubrecordName(ref expected, ref found) => write!(f, "{}: expected {}, found {}", self.description(), expected, found)
+            ParseError::InvalidRecordName(ref expected, ref found) => write!(f, "{}: expected {}, but was {}", self.description(), expected, found),
+            ParseError::InvalidSubrecordName(ref expected, ref found) => write!(f, "{}: expected {}, but was {}", self.description(), expected, found),
+            ParseError::InvalidSubrecordSize(ref sub_name, size_expected, size_found) => write!(f, "{}: subrecord {}, expected size {}, but was {}", self.description(), sub_name, size_expected, size_found)
         }
     }
 }

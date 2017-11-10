@@ -1,5 +1,5 @@
 pub mod record_header;
-pub mod subrecord_header;
+pub mod cell;
 
 use std::io::{ Read, Seek, SeekFrom, Cursor };
 use std::fmt;
@@ -8,26 +8,25 @@ use parse::Parseable;
 use parse_error::ParseError;
 use record::record_header::RecordHeader;
 use tes3_header::TES3Header;
-use cell::cell_data::CellData;
+use record::cell::Cell;
 
 pub enum Record {
     Unhandled,
     TES3Header(TES3Header),
-    Cell(CellData)
+    Cell(Cell)
 }
 
-fn read_data<R: Read + Seek>(reader: &mut R , size: usize) -> Result<Vec<u8>, ParseError> {
+pub fn read_data<R: Read + Seek>(reader: &mut R , size: usize) -> Result<Vec<u8>, ParseError> {
     let mut data: Vec<u8> = Vec::with_capacity(size);
     data.resize(size, 0);
     reader.read_exact(&mut data)?;
     Ok(data)
 }
 
-impl Parseable<Record> for Record {
+impl Parseable for Record {
 
     fn parse<R: Read + Seek>(reader: &mut R) -> Result<Record, ParseError> {
         let header = RecordHeader::parse(reader)?;
-
         let record = match header.get_name().as_ref() {
             "TES3" => {
                 let data = read_data(reader, header.get_size() as usize)?;
@@ -37,7 +36,7 @@ impl Parseable<Record> for Record {
             "CELL" => {
                 let data = read_data(reader, header.get_size() as usize)?;
                 let mut cursor = Cursor::new(data);
-                Record::Cell(CellData::parse(&mut cursor)?)
+                Record::Cell(Cell::parse(&mut cursor)?)
             },
             _unhandled => {
                 reader.seek(SeekFrom::Current(header.get_size() as i64))?;
@@ -45,7 +44,6 @@ impl Parseable<Record> for Record {
             }
         };
         Ok(record)
-
     }
 }
 

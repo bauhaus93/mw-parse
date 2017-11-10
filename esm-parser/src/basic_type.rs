@@ -3,38 +3,63 @@ use std::io::{ Read, Seek };
 
 use byteorder::{ ReadBytesExt, LittleEndian };
 
-use parse::{ Parseable, ParseableWithSize };
+use parse::{ Parseable, ParseableExact };
 use parse_error::ParseError;
 
-pub struct Long32(pub i32);
-pub struct Long64(pub i64);
-pub struct Float32(pub f32);
-pub struct Text(pub String);
-
-impl Parseable<Long32> for Long32 {
-    fn parse<R: Read + Seek>(reader: &mut R) -> Result<Long32, ParseError> {
-        Ok(Long32(reader.read_i32::<LittleEndian>()?))
+impl Parseable for i32 {
+    fn parse<R: Read + Seek>(reader: &mut R) -> Result<i32, ParseError> {
+        i32::parse_exact(reader, 4)
     }
 }
 
-impl Parseable<Long64> for Long64 {
-    fn parse<R: Read + Seek>(reader: &mut R) -> Result<Long64, ParseError> {
-        Ok(Long64(reader.read_i64::<LittleEndian>()?))
+impl Parseable for i64 {
+    fn parse<R: Read + Seek>(reader: &mut R) -> Result<i64, ParseError> {
+        i64::parse_exact(reader, 8)
     }
 }
 
-impl Parseable<Float32> for Float32 {
-    fn parse<R: Read + Seek>(reader: &mut R) -> Result<Float32, ParseError> {
-        Ok(Float32(reader.read_f32::<LittleEndian>()?))
+impl Parseable for f32 {
+    fn parse<R: Read + Seek>(reader: &mut R) -> Result<f32, ParseError> {
+        f32::parse_exact(reader, 4)
     }
 }
 
-impl ParseableWithSize<Text> for Text {
-    fn parse<R: Read + Seek>(reader: &mut R, size: usize) -> Result<Text, ParseError> {
+impl ParseableExact for i32 {
+    fn parse_exact<R: Read + Seek>(reader: &mut R, size: usize) -> Result<i32, ParseError> {
+        assert!(size == 4);
+        let mut field: Vec<u8> = Vec::with_capacity(size);
+        field.resize(size, 0);
+        reader.read_exact(&mut field)?;
+        Ok((&field[..]).read_i32::<LittleEndian>()?)
+    }
+}
+
+impl ParseableExact for i64 {
+    fn parse_exact<R: Read + Seek>(reader: &mut R, size: usize) -> Result<i64, ParseError> {
+        assert!(size == 8);
+        let mut field: Vec<u8> = Vec::with_capacity(size);
+        field.resize(size, 0);
+        reader.read_exact(&mut field)?;
+        Ok((&field[..]).read_i64::<LittleEndian>()?)
+    }
+}
+
+impl ParseableExact for f32 {
+    fn parse_exact<R: Read + Seek>(reader: &mut R, size: usize) -> Result<f32, ParseError> {
+        assert!(size == 4);
+        let mut field: Vec<u8> = Vec::with_capacity(size);
+        field.resize(size, 0);
+        reader.read_exact(&mut field)?;
+        Ok((&field[..]).read_f32::<LittleEndian>()?)
+    }
+}
+
+impl ParseableExact for String {
+    fn parse_exact<R: Read + Seek>(reader: &mut R, size: usize) -> Result<String, ParseError> {
         let mut field: Vec<u8> = Vec::with_capacity(size);
         field.resize(size, 0);
         reader.read_exact(&mut field)?;
         let text: String = field.iter().map(|&c| c as char).collect();
-        Ok(Text(text))
+        Ok(text)
     }
 }
