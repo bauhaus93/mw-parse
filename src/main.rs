@@ -8,7 +8,7 @@ extern crate esm_parser;
 use esm_parser::GameData;
 
 pub fn main() {
-    match logger::init() {
+    match logger::init(logger::LogLevel::Trace) {
         Ok(_) => {},
         Err(e) => {
             println!("Failed to init log: {}", e);

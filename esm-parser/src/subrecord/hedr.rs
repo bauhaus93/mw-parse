@@ -14,18 +14,15 @@ pub struct Hedr {
     num_records: u32
 }
 
+impl Hedr {
+    pub fn get_num_records(&self) -> u32 {
+        self.num_records
+    }
+}
+
 impl Parseable for Hedr {
 
     fn from_stream<R: Read>(reader: &mut R) -> Result<Self, ParseError> {
-        let header = Header::from_stream(reader)?;
-        
-        if header.get_name() != "HEDR" {
-            return Err(ParseError::InvalidSubrecordName("HEDR".to_owned(), header.get_name().to_owned()));
-        }
-        if header.get_size() != 300 {
-            return Err(ParseError::InvalidSubrecordSize("HEDR".to_owned(), 300, header.get_size()));
-        }
-
         Ok(
             Hedr {
                 version: f32::from_stream(reader)?,

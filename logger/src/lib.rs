@@ -8,8 +8,16 @@ use log::{ LogRecord, LogLevelFilter, SetLoggerError };
 use env_logger::LogBuilder;
 use chrono::{ Datelike, Timelike, Local };
 
+pub enum LogLevel {
+    Trace,
+    Debug,
+    Info,
+    Warn,
+    Error
+}
 
-pub fn init() -> Result<(), SetLoggerError> {
+
+pub fn init(log_level: LogLevel) -> Result<(), SetLoggerError> {
 
     let format = | record: &LogRecord | {
         let time = Local::now();
@@ -17,7 +25,16 @@ pub fn init() -> Result<(), SetLoggerError> {
     };
 
     let mut builder = LogBuilder::new();
-    builder.format(format).filter(None, LogLevelFilter::Info);
+
+    let filter = match log_level {
+        LogLevel::Trace => LogLevelFilter::Trace,
+        LogLevel::Debug => LogLevelFilter::Debug,
+        LogLevel::Info => LogLevelFilter::Info,
+        LogLevel::Warn => LogLevelFilter::Warn,
+        LogLevel::Error => LogLevelFilter::Error
+    };
+
+    builder.format(format).filter(None, filter);
 
     if env::var("RUST_LOG").is_ok() {
         builder.parse(&env::var("RUST_LOG").unwrap());   //TODO catch properly

@@ -1,21 +1,28 @@
-use std::io::Read;
+use std::io::{ Read, Seek };
 use std::fmt;
 
 use parse::Parseable;
 use parse_error::ParseError;
 use subrecord::hedr::Hedr;
+use subrecord::read_subrecord;
 
 pub struct TES3 {
     hedr: Hedr
 }
 
+impl TES3 {
+
+    pub fn get_hedr(&self) -> &Hedr {
+        &self.hedr
+    }
+}
 
 impl Parseable for TES3 {
 
     fn from_stream<R: Read>(reader: &mut R) -> Result<Self, ParseError> {
         Ok(
             TES3 {
-                hedr: Hedr::from_stream(reader)?
+                hedr: read_subrecord("HEDR", reader)?
             }
         )
     }

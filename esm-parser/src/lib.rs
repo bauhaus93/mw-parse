@@ -6,6 +6,7 @@ pub mod parse_error;
 pub mod file_type;
 pub mod parse;
 pub mod point;
+pub mod tuple;
 
 pub mod field;
 pub mod record;
@@ -34,6 +35,13 @@ pub fn parse_game_data(path_esm: &str) -> Result<GameData, ParseError> {
         Record::Tes3(tes3) => tes3,
         _ => return Err(ParseError::InvalidRecordName("TES3".to_owned(), "<OTHER>".to_owned()))
     };
+
+    for _ in 0..tes3_header.get_hedr().get_num_records() {
+        match Record::from_stream(&mut reader)? {
+            Record::Cell(cell) => info!("{}", cell),
+            _ => {}
+        }
+    }
 
 
     let game_data = GameData {
