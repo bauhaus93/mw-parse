@@ -1,59 +1,41 @@
-pub mod record_header;
-pub mod cell;
-pub mod cell_object;
+pub mod tes3;
+mod header;
 
-use std::io::{ Read, Seek, SeekFrom, Cursor };
-use std::fmt;
+use std::io::Read;
+use std::io;
 
 use parse::Parseable;
 use parse_error::ParseError;
-use record::record_header::RecordHeader;
-use tes3_header::TES3Header;
-use record::cell::Cell;
+
+use record::header::Header;
+use record::tes3::TES3;
 
 pub enum Record {
-    Unhandled,
-    TES3Header(TES3Header),
+    Unhandled(String),
+    Tes3(TES3),
     Cell(Cell)
-}
-
-pub fn read_data<R: Read + Seek>(reader: &mut R , size: usize) -> Result<Vec<u8>, ParseError> {
-    let mut data: Vec<u8> = Vec::with_capacity(size);
-    data.resize(size, 0);
-    reader.read_exact(&mut data)?;
-    Ok(data)
 }
 
 impl Parseable for Record {
 
-    fn parse<R: Read + Seek>(reader: &mut R) -> Result<Record, ParseError> {
-        let header = RecordHeader::parse(reader)?;
-        let record = match header.get_name().as_ref() {
-            "TES3" => {
-                let data = read_data(reader, header.get_size() as usize)?;
-                let mut cursor = Cursor::new(data);
-                Record::TES3Header(TES3Header::parse(&mut cursor)?)
-            },
-            "CELL" => {
-                let data = read_data(reader, header.get_size() as usize)?;
-                let mut cursor = Cursor::new(data);
-                Record::Cell(Cell::parse(&mut cursor)?)
-            },
-            _unhandled => {
-                reader.seek(SeekFrom::Current(header.get_size() as i64))?;
-                Record::Unhandled
+    fn from_stream<R: Read>(reader: &mut R) -> Result<Self, ParseError> {
+        let header = Header::from_stream(reader)?;
+        let mut ref_reader = reader.by_ref().take(header.get_size() as u64);
+
+        let record = match header.get_name() {
+            "TES3" => Record::Tes3(TES3::from_stream(&mut ref_reader)?),
+            _ => {
+                io::copy(&mut ref_reader, &mut io::sink())?;
+                Record::Unhandled(header.get_name().to_owned())
             }
         };
+
         Ok(record)
     }
+
 }
 
-impl fmt::Display for Record {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match *self {
-            Record::TES3Header(ref tes3) => write!(f, "{}", tes3),
-            Record::Cell(ref cell_data) => write!(f, "{}", cell_data),
-            Record::Unhandled => write!(f, "unhandled record")
-        }
-    }
+
+pub struct Cell {
+
 }
