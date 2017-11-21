@@ -1,7 +1,7 @@
 use std::fmt;
 
-type Position = Point3D<f32>;
-type Rotation = Point3D<f32>;
+pub type Position = Point3D<f32>;
+pub type Rotation = Point3D<f32>;
 
 pub struct Point2D<T> {
     x: T,

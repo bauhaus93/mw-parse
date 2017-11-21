@@ -4,7 +4,7 @@ use std::fmt;
 use subrecord::Subrecord;
 use subrecord::subrecord_header::SubrecordHeader;
 use parse_error::ParseError;
-use parse::{ Parseable, ParseableExact };
+use field::Field;
 
 pub struct Hedr {
     version: f32,
@@ -39,11 +39,11 @@ impl Subrecord for Hedr {
             return Err(ParseError::InvalidSubrecordSize(header.get_name().to_owned(), 300, header.get_size()))
         }
         Ok(Hedr {
-            version: f32::parse(reader)?,
-            file_type: i32::parse(reader)? as u32,
-            company_name: String::parse_exact(reader, 32)?,
-            description: String::parse_exact(reader, 256)?,
-            num_records: i32::parse(reader)? as u32,
+            version: f32::parse_field_fixed(reader)?,
+            file_type: i32::parse_field_fixed(reader)? as u32,
+            company_name: String::parse_field(reader, 32)?,
+            description: String::parse_field(reader, 256)?,
+            num_records: i32::parse_field_fixed(reader)? as u32,
         })
     }
 }

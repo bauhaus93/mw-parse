@@ -1,5 +1,6 @@
 pub mod record_header;
 pub mod cell;
+pub mod cell_object;
 
 use std::io::{ Read, Seek, SeekFrom, Cursor };
 use std::fmt;

@@ -6,7 +6,7 @@ use parse_error::ParseError;
 use parse::Parseable;
 use point::Point2D;
 use subrecord::Subrecord;
-use subrecord::triple::Triple;
+use subrecord::tuple::{ Triple, Sextuple };
 use subrecord::ambient_data::AmbientData;
 
 //TODO distinct classes/enum for interior and exterior cells
@@ -42,6 +42,12 @@ impl Parseable for Cell {
             }
             _ => (None, None)
         };
+
+        loop {
+
+
+        }
+
 
         let cell_data = Cell {
             name: name,

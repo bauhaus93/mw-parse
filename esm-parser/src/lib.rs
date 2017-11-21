@@ -7,9 +7,9 @@ pub mod tes3_header;
 pub mod record;
 pub mod subrecord;
 pub mod file_type;
-pub mod basic_type;
 pub mod parse;
 pub mod point;
+pub mod field;
 
 use std::fs::File;
 use std::io::{ BufReader };

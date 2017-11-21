@@ -1,7 +1,8 @@
 use std::io::{ Read, Seek };
 
-use parse::{ Parseable, ParseableExact };
+use parse::Parseable;
 use parse_error::ParseError;
+use field::Field;
 
 pub struct SubrecordHeader {
     name: String,
@@ -22,8 +23,8 @@ impl SubrecordHeader {
 impl Parseable for SubrecordHeader {
 
     fn parse<R: Read + Seek>(reader: &mut R) -> Result<SubrecordHeader, ParseError> {
-        let name = String::parse_exact(reader, 4)?;
-        let size = i32::parse(reader)?;
+        let name = String::parse_field(reader, 4)?;
+        let size = i32::parse_field_fixed(reader)?;
         trace!("subrecord header: name = {}, size = {}", name, size);
         let header = SubrecordHeader {
             name: name,

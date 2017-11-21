@@ -2,7 +2,7 @@ pub mod subrecord_header;
 pub mod hedr;
 pub mod ambient_data;
 pub mod basic_subrecord;
-pub mod triple;
+pub mod tuple;
 
 use std::io::{ Read, Seek, SeekFrom };
 
