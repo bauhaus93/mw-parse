@@ -4,13 +4,23 @@ use std::fmt;
 use parse::Parseable;
 use parse_error::ParseError;
 
-use subrecord::header::Header;
-
 pub struct Ambient {
     color_ambient: u32,
     color_sunlight: u32,
     color_fog: u32,
     density_fog: f32
+}
+
+impl Default for Ambient {
+
+    fn default() -> Self {
+        Ambient {
+            color_ambient: 0,
+            color_sunlight: 0,
+            color_fog: 0,
+            density_fog: 0.5
+        }
+    }
 }
 
 impl Parseable for Ambient {

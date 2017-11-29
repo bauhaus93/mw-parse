@@ -4,8 +4,6 @@ use std::fmt;
 use parse::Parseable;
 use parse_error::ParseError;
 
-use subrecord::header::Header;
-
 pub struct Hedr {
     version: f32,
     file_type: u32,

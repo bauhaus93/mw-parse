@@ -1,4 +1,4 @@
-use std::io::{ Read, Seek };
+use std::io::Read;
 use parse_error::ParseError;
 
 pub trait Parseable
